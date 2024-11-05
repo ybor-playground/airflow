@@ -5,6 +5,8 @@ from airflow.providers.airbyte.operators.airbyte import AirbyteTriggerSyncOperat
 from airflow.models import Variable
 
 DAG_ID = "NPI_Airbyte_job"
+
+# Set the Variable: AIRBYTE_NPI_S3_CONN_ID in the Airflow UI under Admin > Variables or via the CLI:
 CONN_ID = Variable.get("AIRBYTE_NPI_S3_CONN_ID", default_var="default_connection_id")  # Retrieve the connection ID from an Airflow variable
 
 @dag(
