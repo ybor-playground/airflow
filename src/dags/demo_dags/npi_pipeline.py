@@ -46,7 +46,7 @@ dag_parameters = {
         title="Destination table where the output should be written to",
         description="(mandatory) Table name for current Run",
     ),
-    "input_file_path": Param(
+    "input_file": Param(
         "s3://airbyte-state-dev-us-east-2-ybor-playground/airbyte-sync/State/",
         type="string",
         title="File path of the input, typically this will be s3 file path or adls",
