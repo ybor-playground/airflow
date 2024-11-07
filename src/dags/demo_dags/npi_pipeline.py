@@ -47,7 +47,7 @@ dag_parameters = {
         description="(mandatory) Table name for current Run",
     ),
     "input_file": Param(
-        "s3://airbyte-state-dev-us-east-2-ybor-playground/airbyte-sync/State/",
+        "s3://airbyte-state-dev-us-east-2-ybor-playground/airbyte-sync/State/2024_11_06_1730857209488_0.jsonl",
         type="string",
         title="File path of the input, typically this will be s3 file path or adls",
         description="(mandatory) input file path for Project run",
