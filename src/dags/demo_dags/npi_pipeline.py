@@ -14,7 +14,7 @@ class Constants:
     ENV = "dev"  # usually dev, stg or prod
 
     # CI/CD Configurations
-    DOCKER_IMAGE_PREFIX = f"p6m.jfrog.io/{ORG}-{VENTURE}/applications"
+    DOCKER_IMAGE_PREFIX = f"p6m.jfrog.io/{ORG}-{VENTURE}-docker/applications"
     NPI_DOCKER_IMAGE = f"{DOCKER_IMAGE_PREFIX}/transforms-data-adapter-server:main"
     TRANSFORMS_SERVICE_ACCOUNT = f"transforms-sa-{ENV}-{ORG}-{VENTURE}"
 
