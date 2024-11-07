@@ -113,7 +113,7 @@ def init_task(args) -> dict:
     do_xcom_push=True,
     image_pull_secrets=[k8s.V1LocalObjectReference(Constants.PULL_SECRET)],
     is_delete_operator_pod=True,
-    labels={"app": "transformations", "app_type": "driver"},
+    # labels={"app": "transformations", "app_type": "driver"},
     annotations={
         Constants.ISTIO_ANNOTATION: "false", Constants.DO_NOT_EVICT: "true",
         Constants.DO_NOT_CONSOLIDATE: "true", Constants.DO_NOT_DISRUPT: "true"},
@@ -121,7 +121,7 @@ def init_task(args) -> dict:
         requests={"memory": "1Gi", "cpu": "2.0", "ephemeral-storage": "1Gi"},
         limits={"memory": "2Gi", "cpu": "2.0", "ephemeral-storage": "3Gi"},
     ),
-    priority_class_name="workflow",
+    # priority_class_name="workflow",
 )
 def transform_task(args: dict) -> dict:
 
