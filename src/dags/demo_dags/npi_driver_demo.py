@@ -72,7 +72,7 @@ def init_task(args) -> dict:
         rc = {
             "mode": dag_run.conf["mode"].strip(),
             "postal_code": dag_run.conf["postal_code"].strip(),
-            "data-ybor": dag_run.conf["data-ybor"].strip(),
+            "s3_bucket": dag_run.conf["s3_bucket"].strip(),
             "limit_records": dag_run.conf["limit_records"],
             "task_id": f"debug-run-{now}",
             "scheduled": False,
