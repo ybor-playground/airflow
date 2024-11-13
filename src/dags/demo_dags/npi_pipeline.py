@@ -191,7 +191,7 @@ def transform_task(args: dict) -> dict:
     logging.basicConfig(level=logging.INFO)
     
     args = {
-        "json_spec_file_path": "/app/src/transforms_data_adapter/transforms/resources/npi.json",
+        "json_spec_file_path": "/app/src/transforms_data_adapter/transforms/resources/npi_flattened.json",
         "update_dict": {
             "input": args["input_file"].replace("s3://", "s3a://"),
             "output": args["output_database"]+"."+args["table_name"],
