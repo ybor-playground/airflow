@@ -169,7 +169,7 @@ def npi_ingestion_task(args: dict) -> dict:
     service_account_name=Constants.TRANSFORMS_SERVICE_ACCOUNT,
     do_xcom_push=True,
     image_pull_secrets=[k8s.V1LocalObjectReference(Constants.PULL_SECRET)],
-    is_delete_operator_pod=True,
+    is_delete_operator_pod=False,
     # labels={"app": "transformations", "app_type": "driver"},
     annotations={
         Constants.ISTIO_ANNOTATION: "false", Constants.DO_NOT_EVICT: "true",
