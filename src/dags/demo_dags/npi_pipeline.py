@@ -15,6 +15,7 @@ class Constants:
 
     # CI/CD Configurations
     DOCKER_IMAGE_PREFIX = f"p6m.jfrog.io/{ORG}-{VENTURE}-docker/applications"
+    NPI_DRIVER_DOCKER_IMAGE = f"{DOCKER_IMAGE_PREFIX}/npi-ybor-playground-server:main"
     NPI_DOCKER_IMAGE = f"{DOCKER_IMAGE_PREFIX}/transforms-data-adapter-server:main"
     TRANSFORMS_SERVICE_ACCOUNT = f"transforms-sa-{ENV}-{ORG}-{VENTURE}"
 
@@ -52,12 +53,24 @@ dag_parameters = {
         title="File path of the input, typically this will be s3 file path or adls",
         description="(mandatory) input file path for Project run",
     ),
-    "source_format": Param(
-        "json",
+    "postal_code": Param(
+        "95054",
         type="string",
-        title="Input dataset format",
-        description="(mandatory) File format for the input dataset",
-    )
+        title="postal code to pull the data",
+        description="(mandatory) postal code of interest to pull",
+    ),
+    "limit_records": Param(
+        1000,
+        type="integer",
+        title="Number of records to ingest",
+        description="(mandatory) Number of records to ingest",
+    ),
+    "s3_bucket": Param(
+        "data-ybor",
+        type="string",
+        title="S3 bucket to write the data",
+        description="(mandatory) S3 bucket name where the data should be written",
+    ),
 }
 
 
@@ -75,8 +88,10 @@ def init_task(args) -> dict:
         print(f"As this run is manual, getting parameters from DAG.")
         rc = {
             "mode": dag_run.conf["mode"].strip(),
+            "postal_code": dag_run.conf["postal_code"].strip(),
+            "s3_bucket": dag_run.conf["s3_bucket"].strip(),
+            "limit_records": dag_run.conf["limit_records"],
             "output_database": dag_run.conf["output_database"].strip(),
-            "source_format": dag_run.conf["source_format"].strip(),
             "task_id": f"debug-run-{now}",
             "scheduled": False,
             "dag_run_id": dag_run.run_id,
@@ -91,8 +106,9 @@ def init_task(args) -> dict:
         print(f"As this run is scheduled, getting parameters from airflow.")
         rc = {
             "mode": "n/a",
+            "postal_code": "n/a",
+            "limit_records": "n/a",
             "output_database": "playground",
-            "source_format": "json",
             "task_id": f"debug-run-{now}",
             "scheduled": True,
             "dag_run_id": dag_run.run_id,
@@ -100,6 +116,47 @@ def init_task(args) -> dict:
         }
         print(f"init_task output = {rc}")
         return rc
+
+@task.kubernetes(
+    task_id="npi_ingestion_task",
+    name="npi_ingestion_task",
+    namespace="airflow",
+    image=Constants.NPI_DRIVER_DOCKER_IMAGE,
+    in_cluster=True,
+    get_logs=True,
+    service_account_name=Constants.TRANSFORMS_SERVICE_ACCOUNT,
+    do_xcom_push=True,
+    image_pull_secrets=[k8s.V1LocalObjectReference(Constants.PULL_SECRET)],
+    is_delete_operator_pod=True,
+    # labels={"app": "transformations", "app_type": "driver"},
+    annotations={
+        Constants.ISTIO_ANNOTATION: "false", Constants.DO_NOT_EVICT: "true",
+        Constants.DO_NOT_CONSOLIDATE: "true", Constants.DO_NOT_DISRUPT: "true"},
+    container_resources=k8s.V1ResourceRequirements(
+        requests={"memory": "1Gi", "cpu": "2.0", "ephemeral-storage": "1Gi"},
+        limits={"memory": "2Gi", "cpu": "2.0", "ephemeral-storage": "3Gi"},
+    ),
+    # priority_class_name="workflow",
+)
+def npi_ingestion_task(args: dict) -> dict:
+    import logging
+
+    # use {{ org_name }}_{{ venture_name }} archetype macro
+    from npi_ybor_playground.npi.npi import process_npi_data
+
+    logger = logging.getLogger(__name__)
+    logging.basicConfig(level=logging.INFO)
+
+    logger.info(f"input = {args}")
+    rc = process_npi_data(
+        postal_code=args["postal_code"],
+        s3_bucket=args["s3_bucket"],
+        limit=args["limit_records"])
+    logger.info(f"output = {rc}")
+    path = rc.get("s3_path", None)
+    if path:
+        args["input_file"] = path
+    return args
 
 
 @task.kubernetes(
@@ -138,7 +195,6 @@ def transform_task(args: dict) -> dict:
         "update_dict": {
             "input": args["input_file"].replace("s3://", "s3a://"),
             "output": args["output_database"]+"."+args["table_name"],
-            "source_format": args["source_format"],
             "job_metadata_dag_name": args["dag_name"],
             "job_metadata_dag_run_id": args["dag_run_id"]
         },
@@ -179,7 +235,8 @@ def workflow():
     }
 
     input_args = init_task(scheduler_info)
-    npi_transforms_output = transform_task(input_args)
+    npi_ingestion_task_output = npi_ingestion_task(input_args)
+    npi_transforms_output = transform_task(npi_ingestion_task_output)
     echo_task(npi_transforms_output)
 
 
