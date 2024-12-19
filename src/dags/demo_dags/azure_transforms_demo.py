@@ -117,7 +117,7 @@ def transform_task(args: dict) -> dict:
     import logging
 
     # use {{ org_name }}_{{ venture_name }} archetype macro
-    from transforms_data_adapter.transforms.azure_blob_transformation.py import run
+    from transforms_data_adapter.transforms.azure_blob_transformation import run
 
     logger = logging.getLogger(__name__)
     logging.basicConfig(level=logging.INFO)
