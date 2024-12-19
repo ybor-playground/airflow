@@ -104,9 +104,9 @@ def init_task(args) -> dict:
     image_pull_secrets=[k8s.V1LocalObjectReference(Constants.PULL_SECRET)],
     is_delete_operator_pod=True,
     # labels={"app": "transformations", "app_type": "driver"},
-    annotations={
-        Constants.ISTIO_ANNOTATION: "false", Constants.DO_NOT_EVICT: "true",
-        Constants.DO_NOT_CONSOLIDATE: "true", Constants.DO_NOT_DISRUPT: "true"},
+    # annotations={
+    #     Constants.ISTIO_ANNOTATION: "false", Constants.DO_NOT_EVICT: "true",
+    #     Constants.DO_NOT_CONSOLIDATE: "true", Constants.DO_NOT_DISRUPT: "true"},
     container_resources=k8s.V1ResourceRequirements(
         requests={"memory": "1Gi", "cpu": "2.0", "ephemeral-storage": "1Gi"},
         limits={"memory": "2Gi", "cpu": "2.0", "ephemeral-storage": "3Gi"},
