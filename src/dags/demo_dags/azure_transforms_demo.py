@@ -15,7 +15,7 @@ class Constants:
 
     # CI/CD Configurations
     DOCKER_IMAGE_PREFIX = f"p6m.jfrog.io/{ORG}-{VENTURE}-docker/applications"
-    TRANSFORMS_DOCKER_IMAGE = f"{DOCKER_IMAGE_PREFIX}/transforms-data-adapter-server:v1.0.10"
+    TRANSFORMS_DOCKER_IMAGE = f"{DOCKER_IMAGE_PREFIX}/transforms-data-adapter-server:v1.0.13"
     TRANSFORMS_SERVICE_ACCOUNT = f"transforms-sa-{ENV}-{ORG}-{VENTURE}"
 
     PULL_SECRET = "dockerconfig"  # "regcred"
