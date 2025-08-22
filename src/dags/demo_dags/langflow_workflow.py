@@ -1,3 +1,4 @@
+import os
 from datetime import datetime
 import base64
 import json
@@ -69,8 +70,8 @@ with DAG(
 
     @task(task_id="build_headers")
     def build_headers() -> dict:
-        api_key = read_x_api_key_from_k8s(secret_name="langflow-runtime-key", namespace="airflow")
-        return {"x-api-key": api_key, "Content-Type": "application/json"}
+        # api_key = read_x_api_key_from_k8s(secret_name="langflow-runtime-key", namespace="airflow")
+        return {"x-api-key": os.getenv("langflow_api_key"), "Content-Type": "application/json"}
 
     headers_xcom = build_headers()
     # Make a simple GET to httpbin which echoes our headers back to us
