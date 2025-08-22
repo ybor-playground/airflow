@@ -72,13 +72,14 @@ with DAG(
         api_key = read_x_api_key_from_k8s(secret_name="langflow-runtime-key", namespace="airflow")
         return {"x-api-key": api_key, "Content-Type": "application/json"}
 
+    headers_xcom = build_headers()
     # Make a simple GET to httpbin which echoes our headers back to us
     call_api = HttpOperator(
         task_id="call_langflow",
         http_conn_id="lang_flow_dev_http",
         endpoint="/api/v1/build/9e27f6fa-3b84-49a2-a6e3-4946b6926bb7/flow?log_builds=true&event_delivery=streaming",
         method="POST",
-        headers=build_headers(),
+        headers=headers_xcom,
         data= json.dumps({
                 "output_type": "text",
                 "input_type": "text",
@@ -100,6 +101,6 @@ with DAG(
                 f"x-api-key mismatch. expected={expected!r} got={got!r} (echoed headers: {echoed})"
             )
 
-    assert_header_echoed = assert_header_echoed(call_api.output, build_headers())
+    assert_header_echoed = assert_header_echoed(call_api.output, headers_xcom)
 
-    build_headers() >> call_api >> assert_header_echoed
+    headers_xcom >> call_api >> assert_header_echoed
