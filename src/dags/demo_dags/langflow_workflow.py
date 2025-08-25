@@ -89,7 +89,8 @@ with DAG(
         response_filter=lambda r: r.json(),
         log_response=True,
         do_xcom_push=True,
-        dag=dag
+        dag=dag,
+        extra_options= {'verify': False}
     )
 
     @task(task_id="assert_header_echoed")
