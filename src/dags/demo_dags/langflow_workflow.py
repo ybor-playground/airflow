@@ -75,7 +75,7 @@ with DAG(
 
     headers_xcom = build_headers()
     # Make a simple GET to httpbin which echoes our headers back to us
-    call_api = HttpOperator(
+    call_api = SimpleHttpOperator(
         task_id="call_langflow",
         http_conn_id="lang_flow_dev_http",
         endpoint="/api/v1/build/9e27f6fa-3b84-49a2-a6e3-4946b6926bb7/flow?log_builds=true&event_delivery=streaming",
