@@ -71,7 +71,7 @@ def init_task(args) -> dict:
     # service_account_name=Constants.TRANSFORMS_SERVICE_ACCOUNT,
     do_xcom_push=True,
     image_pull_secrets=[k8s.V1LocalObjectReference(Constants.PULL_SECRET)],
-    is_delete_operator_pod=True,
+    is_delete_operator_pod=False,
     env_from=[kg_secrets, kg_configmap],
     # labels={"app": "transformations", "app_type": "driver"},
     # annotations={
