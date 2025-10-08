@@ -66,6 +66,7 @@ def init_task(args) -> dict:
     name="kg_ingestion_task",
     namespace="airflow",
     image=Constants.KG_DRIVER_DOCKER_IMAGE,
+    image_pull_policy="Always",
     in_cluster=True,
     get_logs=True,
     # service_account_name=Constants.TRANSFORMS_SERVICE_ACCOUNT,
