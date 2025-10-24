@@ -93,7 +93,7 @@ def kg_ingestion_task(args: dict) -> dict:
         "owner": Constants.DAG_OWNER,
         "depends_on_past": False,
     },
-    params=dag_parameters,
+    # params=dag_parameters,
     start_date=days_ago(1),
     schedule_interval=None, # Constants.DAG_SCHEDULE,
     max_active_runs=1,
