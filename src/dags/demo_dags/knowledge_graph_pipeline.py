@@ -28,22 +28,6 @@ class Constants:
     DO_NOT_CONSOLIDATE = "karpenter.sh/do-not-consolidate"
     DO_NOT_DISRUPT = "karpenter.sh/do-not-disrupt"
 
-
-dag_parameters = {
-    "mode": Param(
-        "development",
-        type="string",
-        title="Development or Production run?",
-        description="(mandatory) Development or Production ?",
-    ),
-    "output_database": Param(
-        "playground",
-        type="string",
-        title="Destination database where the output should be register to",
-        description="(mandatory) Database name for current Run",
-    )
-}
-
 kg_configmap = k8s.V1EnvFromSource(
     config_map_ref=k8s.V1ConfigMapEnvSource(name=Constants.KG_CONFIGMAP)
 )
