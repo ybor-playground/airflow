@@ -28,6 +28,23 @@ class Constants:
     DO_NOT_CONSOLIDATE = "karpenter.sh/do-not-consolidate"
     DO_NOT_DISRUPT = "karpenter.sh/do-not-disrupt"
 
+dag_parameters = {
+    "graph_space": Param(
+        default=None,
+        type="string",
+        title="Name of the graph space to be created",
+        description="(mandatory) Graph space name is required to run the DAG",
+        required=True
+    ),
+    "csv_name": Param(
+        default=None,
+        type="string",
+        title="Name to the csv file to be processed",
+        description="(mandatory) CSV file name is required to run the DAG",
+        required=True
+    )
+}
+
 kg_configmap = k8s.V1EnvFromSource(
     config_map_ref=k8s.V1ConfigMapEnvSource(name=Constants.KG_CONFIGMAP)
 )
@@ -93,32 +110,33 @@ def kg_ingestion_task(args: dict) -> dict:
         "owner": Constants.DAG_OWNER,
         "depends_on_past": False,
     },
-    # params=dag_parameters,
+    params=dag_parameters,
     start_date=days_ago(1),
     schedule_interval=None, # Constants.DAG_SCHEDULE,
     max_active_runs=1,
 )
 def workflow():
-
-    # kg_secrets = k8s.V1EnvFromSource(
-    #     secret_ref=k8s.V1SecretEnvSource(name=Constants.kg_secrets)
-    # )
-
     # Note : This task will go away shortly
     @task
     def echo_task(args: dict) -> dict:
         print(args)
         return args
 
-    # pipe output of each stage as input to the next stage
-
+    # Scheduler Args
     scheduler_info = {
         "scheduler_from_date": "{{ prev_data_interval_end_success }}",
         "scheduler_to_date": "{{ data_interval_end }}",
     }
-
-    input_args = init_task(scheduler_info)
-    kg_output = kg_ingestion_task(input_args)
+    # General Args
+    args = {
+        **scheduler_info,
+        "graph_space": "{{ params.graph_space }}",
+        "csv_name": "{{ params.csv_name }}",
+    }
+    
+    # pipe output of each stage as input to the next stage
+    init_output = init_task(args)
+    kg_output = kg_ingestion_task(init_output)
     echo_task(kg_output)
 
 
