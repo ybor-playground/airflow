@@ -33,15 +33,13 @@ dag_parameters = {
         default=None,
         type="string",
         title="Name of the graph space to be created",
-        description="(mandatory) Graph space name is required to run the DAG",
-        required=True
+        description="(mandatory) Graph space name is required to run the DAG"
     ),
     "csv_name": Param(
         default=None,
         type="string",
         title="Name to the csv file to be processed",
-        description="(mandatory) CSV file name is required to run the DAG",
-        required=True
+        description="(mandatory) CSV file name is required to run the DAG"
     )
 }
 
