@@ -93,7 +93,7 @@ def kg_ingestion_task(args: dict) -> dict:
     logging.basicConfig(level=logging.INFO)
 
     logger.info(f"input = {args}")
-    rc = run()
+    rc = run(graph_space=["graph_space"], csv_name=args["csv_name"])
     logger.info(f"output = {rc}")
     path = rc.get("s3_path", None)
     if path:
