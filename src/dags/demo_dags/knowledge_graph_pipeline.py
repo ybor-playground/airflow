@@ -38,8 +38,20 @@ dag_parameters = {
     "csv_name": Param(
         default=None,
         type="string",
-        title="Name to the csv file to be processed",
+        title="Name of the csv file to be processed",
         description="(mandatory) CSV file name is required to run the DAG"
+    ),
+    "container_name": Param(
+        default=None,
+        type="string",
+        title="Name of the container where csv file gets uploaded",
+        description="(mandatory) Container name is needed to locate the csv"
+    ),
+    "storage_container_prefix": Param(
+        default=None,
+        type="string",
+        title="Name of the folder inside container where csv gets listed",
+        description="(mandatory) Folder name where csv listing happens"
     )
 }
 
@@ -93,7 +105,7 @@ def kg_ingestion_task(args: dict) -> dict:
     logging.basicConfig(level=logging.INFO)
 
     logger.info(f"input = {args}")
-    result = run(graph_space=args["graph_space"], csv_name=args["csv_name"])
+    result = run(graph_space=args["graph_space"], csv_name=args["csv_name"], container_name=args["container_name"], storage_container_prefix=args["storage_container_prefix"])
     logger.info(f"output = {result}")
     return args
 
@@ -127,6 +139,8 @@ def workflow():
         **scheduler_info,
         "graph_space": "{{ params.graph_space }}",
         "csv_name": "{{ params.csv_name }}",
+        "container_name": "{{ params.container_name }}",
+        "storage_container_prefix": "{{ params.storage_container_prefix }}"
     }
     
     # pipe output of each stage as input to the next stage
