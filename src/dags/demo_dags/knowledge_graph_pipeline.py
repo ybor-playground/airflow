@@ -15,7 +15,7 @@ class Constants:
 
     # CI/CD Configurations
     DOCKER_IMAGE_PREFIX = f"p6m.jfrog.io/{ORG}-{VENTURE}-docker/applications"
-    KG_DRIVER_DOCKER_IMAGE = f"{DOCKER_IMAGE_PREFIX}/ybor-graph-query-adapter-server:sha-e96a25e"
+    KG_DRIVER_DOCKER_IMAGE = f"{DOCKER_IMAGE_PREFIX}/ybor-graph-query-adapter-server:sha-54c8ee2"
 
 
     PULL_SECRET = "dockerconfig"  # "regcred"
